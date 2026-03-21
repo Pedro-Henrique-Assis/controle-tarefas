@@ -3,8 +3,8 @@ import { View, Text, FlatList, TouchableOpacity, Modal, Alert, StyleSheet, SafeA
 import { useFocusEffect } from '@react-navigation/native';
 import { buscarAtividadesPorTrabalho, inserirAtividade, atualizarAtividade, deletarAtividade } from '../banco-de-dados/atividadeRepository';
 import { buscarAlunosPorTrabalho } from '../banco-de-dados/alunoXTrabalhoRepository';
-import InputTexto from '../components/InputTexto';
-import BotaoPrimario from '../components/BotaoPrimario';
+import InputTexto from '../componentes/InputTexto';
+import BotaoPrimario from '../componentes/BotaoPrimario';
 
 const SITUACOES = ['pendente', 'concluida', 'cancelada'];
 const COR_STATUS = { concluida: '#22C55E', cancelada: '#EF4444', pendente: '#F59E0B' };

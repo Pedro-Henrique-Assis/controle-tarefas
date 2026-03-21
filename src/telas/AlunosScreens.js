@@ -5,8 +5,8 @@ import {
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { buscarAlunos, inserirAluno, atualizarAluno, deletarAluno } from '../banco-de-dados/alunoRepository';
-import InputTexto from '../components/InputTexto';
-import BotaoPrimario from '../components/BotaoPrimario';
+import InputTexto from '../componentes/InputTexto';
+import BotaoPrimario from '../componentes/BotaoPrimario';
 
 export default function AlunosScreen() {
   const [alunos, setAlunos] = useState([]);

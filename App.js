@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { getDatabase } from './src/banco-de-dados/banco';
-import AppNavigator from './src/navigation/AppNavigator';
+import AppNavigator from './src/navegacao/AppNavigator';
 
 export default function App() {
 

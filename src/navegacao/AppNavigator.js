@@ -4,13 +4,13 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 
-import HomeScreen from '../screens/HomeScreen';
-import AlunosScreen from '../screens/AlunosScreen';
-import TrabalhosScreen from '../screens/TrabalhosScreen';
-import TrabalhoDetalheScreen from '../screens/TrabalhoDetalheScreen';
-import AtividadesScreen from '../screens/AtividadesScreen';
-import AndamentoScreen from '../screens/AndamentoScreen';
-import GraficoScreen from '../screens/GraficoScreen';
+import HomeScreen from '../telas/HomeScreen';
+import AlunosScreen from '../telas/AlunosScreens';
+import TrabalhosScreen from '../telas/TrabalhosScreens';
+import TrabalhoDetalheScreen from '../telas/TrabalhoDetalheScreen';
+import AtividadesScreen from '../telas/AtividadesScreen';
+import AndamentoScreen from '../telas/AndamentoScreen';
+import GraficoScreen from '../telas/GraficoScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();

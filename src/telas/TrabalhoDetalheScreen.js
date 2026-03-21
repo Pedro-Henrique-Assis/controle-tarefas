@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
 import { buscarAlunosPorTrabalho } from '../banco-de-dados/alunoXTrabalhoRepository';
-import BotaoPrimario from '../components/BotaoPrimario';
+import BotaoPrimario from '../componentes/BotaoPrimario';
 
 export default function TrabalhoDetalheScreen({ navigation, route }) {
   const { trabalho } = route.params;

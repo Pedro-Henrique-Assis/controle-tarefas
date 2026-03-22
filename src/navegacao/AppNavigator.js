@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text } from 'react-native';
+import { Text, Image } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -15,7 +15,7 @@ import GraficoScreen from '../telas/GraficoScreen';
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-// 1. Navegador de Abas (Bottom Tabs)
+// 1. Navegador de Abas
 function TabNavigator() {
   return (
     <Tab.Navigator
@@ -32,7 +32,16 @@ function TabNavigator() {
         component={HomeScreen}
         options={{ 
           tabBarLabel: 'Início', 
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 20, color }}>🏠</Text> 
+          tabBarIcon: () => (
+            <Image 
+              source={require('../../assets/silhueta-de-icone-de-casa.png')} 
+              style={{ 
+                width: 20,
+                height: 20, 
+                tintColor: "#0EA5E9",
+              }} 
+            />
+          )
         }}
       />
       <Tab.Screen
@@ -40,7 +49,16 @@ function TabNavigator() {
         component={AlunosScreen}
         options={{ 
           tabBarLabel: 'Alunos', 
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 20, color }}>👤</Text> 
+          tabBarIcon: () => (
+            <Image 
+              source={require('../../assets/pessoas.png')} 
+              style={{ 
+                width: 20,
+                height: 20, 
+                tintColor: "#0EA5E9",
+              }} 
+            />
+          )
         }}
       />
       <Tab.Screen
@@ -48,22 +66,31 @@ function TabNavigator() {
         component={TrabalhosScreen}
         options={{ 
           tabBarLabel: 'Trabalhos', 
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 20, color }}>📚</Text> 
+          tabBarIcon: () => (
+            <Image 
+              source={require('../../assets/e-book.png')} 
+              style={{ 
+                width: 20,
+                height: 20, 
+                tintColor: "#0EA5E9",
+              }} 
+            />
+          )
         }}
       />
     </Tab.Navigator>
   );
 }
 
-// 2. Stack Principal (Aqui ficam as telas que todas as abas precisam acessar)
+// Telas que todas as abas precisam acessar
 export default function AppNavigator() {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {/* A primeira tela do Stack é o navegador de abas */}
+        {}
         <Stack.Screen name="MainTabs" component={TabNavigator} />
         
-        {/* Telas de detalhe ficam fora das abas para serem acessíveis de qualquer lugar */}
+        {}
         <Stack.Screen name="TrabalhoDetalhe" component={TrabalhoDetalheScreen} />
         <Stack.Screen name="Atividades" component={AtividadesScreen} />
         <Stack.Screen name="Andamento" component={AndamentoScreen} />

@@ -1,32 +1,21 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useEffect } from 'react';
 import { getDatabase } from './src/banco-de-dados/banco';
+import AppNavigator from './src/navegacao/AppNavigator';
 
 export default function App() {
 
-  // Garantindo a inicialização do banco de dados antes de qualquer ação
+  // Garantindo a inicialização do banco de dados antes de outras ações
   useEffect(() => {
+    const initDB = async () => {
       try {
-        getDatabase();
-        console.log('Banco de dados inicializado com sucesso!');
+        getDatabase(); // Inicializa o banco de dados e cria as tabelas
+        console.log('Banco de dados inicializado!');
       } catch (error) {
-        console.error('Erro ao inicializar o banco de dados:', error);
+        console.error('Erro ao inicializar o banco:', error);
       }
-    }, []);
+    };
+    initDB();
+  }, []);
 
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+  return <AppNavigator />;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

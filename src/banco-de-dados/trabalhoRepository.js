@@ -1,44 +1,45 @@
 import { getDatabase } from './banco';
 
 // CREATE
-export const inserirTrabalho = (nome, situacao, dataEntrega) => {
+export const inserirTrabalho = async (nome, situacao, dataEntrega) => {
   const db = getDatabase();
-  db.execute(
+  await db.runAsync(
     `INSERT INTO Trabalho (Nome, Situacao, Data_entrega) VALUES (?, ?, ?);`,
     [nome, situacao, dataEntrega]
   );
 };
 
 // READ - Buscar todos
-export const buscarTrabalhos = () => {
+export const buscarTrabalhos = async () => {
   const db = getDatabase();
-  const result = db.execute(`SELECT * FROM Trabalho;`);
-  return result.rows?._array ?? [];
+  const result = await db.getAllAsync(`SELECT * FROM Trabalho;`);
+  // CORREÇÃO: Removido o ".rows", pois o getAllAsync já retorna o array diretamente
+  return result ?? [];
 };
 
 // READ - Buscar por ID
-export const buscarTrabalhoPorID = (id) => {
+export const buscarTrabalhoPorID = async (id) => {
   const db = getDatabase();
-  const result = db.execute(
+  const result = await db.getFirstAsync(
     `SELECT * FROM Trabalho WHERE ID = ?;`,
     [id]
   );
-  return result.rows?._array[0] ?? null;
+  return result ?? null;
 };
 
 // UPDATE
-export const atualizarTrabalho = (id, nome, situacao, dataEntrega) => {
+export const atualizarTrabalho = async (id, nome, situacao, dataEntrega) => {
   const db = getDatabase();
-  db.execute(
+  await db.runAsync(
     `UPDATE Trabalho SET Nome = ?, Situacao = ?, Data_entrega = ? WHERE ID = ?;`,
     [nome, situacao, dataEntrega, id]
   );
 };
 
 // DELETE
-export const deletarTrabalho = (id) => {
+export const deletarTrabalho = async (id) => {
   const db = getDatabase();
-  db.execute(
+  await db.runAsync(
     `DELETE FROM Trabalho WHERE ID = ?;`,
     [id]
   );

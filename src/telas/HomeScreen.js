@@ -12,7 +12,7 @@ const MESES = [
 
 const COR_SITUACAO = { concluido: '#22C55E', cancelado: '#EF4444', pendente: '#F59E0B' };
 
-export default function HomeScreen() {
+export default function HomeScreen({navigation}) {
   const [mesSelecionado, setMesSelecionado] = useState(new Date().getMonth() + 1);
   const [trabalhos, setTrabalhos] = useState([]);
 
@@ -56,7 +56,11 @@ export default function HomeScreen() {
   );
 
   const renderTrabalho = ({ item }) => (
-    <View style={styles.card}>
+    <TouchableOpacity 
+      style={styles.card} 
+      onPress={() => navigation.navigate('TrabalhoDetalhe', { trabalho: item })}
+      activeOpacity={0.7}
+    >
       <View style={styles.cardTopo}>
         <Text style={styles.cardTitulo}>{item.Nome}</Text>
         <View style={[styles.badge, { backgroundColor: COR_SITUACAO[item.Situacao] ?? '#94A3B8' }]}>
@@ -64,7 +68,7 @@ export default function HomeScreen() {
         </View>
       </View>
       <Text style={styles.cardData}>📅 Entrega: {item.Data_entrega}</Text>
-    </View>
+    </TouchableOpacity>
   );
 
   return (

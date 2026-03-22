@@ -6,7 +6,7 @@ const COR_STATUS = { concluida: '#22C55E', cancelada: '#EF4444', pendente: '#F59
 
 export default function GraficoScreen({ navigation, route }) {
   const { trabalho } = route.params;
-  const atividades = buscarAtividadesPorTrabalho(trabalho.ID);
+  const atividades = buscarAtividadesPorTrabalho(trabalho.ID) || [];
 
   const total = atividades.length;
   const concluidas = atividades.filter((a) => a.Status === 'concluida').length;

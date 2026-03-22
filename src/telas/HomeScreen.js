@@ -27,9 +27,13 @@ export default function HomeScreen() {
   );
 
   const carregarTrabalhos = () => {
-    const todos = buscarTrabalhos();
+    // Garante que "todos" sempre seja um array, mesmo se a busca no banco falhar
+    const todos = buscarTrabalhos() || []; 
+    
     const filtrados = todos.filter((t) => {
-      // Data_entrega está no formato YYYY-MM-DD
+      // Garante que a data existe antes de tentar dividi-la
+      if (!t || !t.Data_entrega) return false; 
+      
       const partes = t.Data_entrega.split('-');
       const mes = parseInt(partes[1], 10);
       return mes === mesSelecionado;

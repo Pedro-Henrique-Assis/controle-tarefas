@@ -13,7 +13,7 @@ export const inserirAlunoXTrabalho = async (idTrabalho, raAluno) => {
 export const buscarTodosVinculos = async () => {
   const db = getDatabase();
   const result = await db.getAllAsync(`SELECT * FROM Aluno_x_Trabalho;`);
-  return result.rows ?? [];
+  return result ?? []; // Correção: removido .rows
 };
 
 // READ - Buscar trabalhos de um aluno
@@ -25,7 +25,7 @@ export const buscarTrabalhosPorAluno = async (raAluno) => {
      WHERE at.RA_Aluno = ?;`,
     [raAluno]
   );
-  return result.rows ?? [];
+  return result ?? [];
 };
 
 // READ - Buscar alunos de um trabalho
@@ -37,7 +37,7 @@ export const buscarAlunosPorTrabalho = async (idTrabalho) => {
      WHERE at.ID_Trabalho = ?;`,
     [idTrabalho]
   );
-  return result.rows ?? [];
+  return result ?? [];
 };
 
 // UPDATE - Atualiza o vínculo (troca o aluno ou o trabalho da associação)

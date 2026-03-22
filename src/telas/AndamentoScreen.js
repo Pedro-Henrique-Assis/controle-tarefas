@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
   },
   voltar: {
     paddingHorizontal: 20,
-    paddingTop: 16,
+    paddingTop: 50,
   },
   voltarTexto: {
     color: '#0EA5E9',

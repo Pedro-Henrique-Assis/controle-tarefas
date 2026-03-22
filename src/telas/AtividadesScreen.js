@@ -1,20 +1,21 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Modal, Alert, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Modal, Alert, StyleSheet, SafeAreaView, ScrollView, Image} from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { buscarAtividadesPorTrabalho, inserirAtividade, atualizarAtividade, deletarAtividade } from '../banco-de-dados/atividadeRepository';
 import { buscarAlunosPorTrabalho } from '../banco-de-dados/alunoXTrabalhoRepository';
 import InputTexto from '../componentes/InputTexto';
 import BotaoPrimario from '../componentes/BotaoPrimario';
+import { Ionicons } from '@expo/vector-icons';
 
-const SITUACOES = ['pendente', 'concluida', 'cancelada'];
-const COR_STATUS = { concluida: '#22C55E', cancelada: '#EF4444', pendente: '#F59E0B' };
+const SITUACOES = ['Pendente', 'Concluida', 'Cancelada'];
+const COR_STATUS = { Concluida: '#22C55E', Cancelada: '#EF4444', Pendente: '#F59E0B' };
 
 export default function AtividadesScreen({ navigation, route }) {
   const { trabalho } = route.params;
   const [atividades, setAtividades] = useState([]);
   const [modalVisivel, setModalVisivel] = useState(false);
   const [descricao, setDescricao] = useState('');
-  const [status, setStatus] = useState('pendente');
+  const [status, setStatus] = useState('Pendente');
   const [horas, setHoras] = useState('');
   const [alunoRA, setAlunoRA] = useState('');
   const [alunosDoTrabalho, setAlunosDoTrabalho] = useState([]);
@@ -28,7 +29,7 @@ export default function AtividadesScreen({ navigation, route }) {
   };
 
   const abrirModalNovo = () => {
-    setDescricao(''); setStatus('pendente'); setHoras(''); setAlunoRA('');
+    setDescricao(''); setStatus('Pendente'); setHoras(''); setAlunoRA('');
     setAtividadeEditando(null); setModalVisivel(true);
   };
 
@@ -36,6 +37,19 @@ export default function AtividadesScreen({ navigation, route }) {
     setDescricao(a.Descricao); setStatus(a.Status);
     setHoras(String(a.Horas_trabalhadas)); setAlunoRA(a.Aluno_RA);
     setAtividadeEditando(a); setModalVisivel(true);
+  };
+
+  const handleHorasChange = (text) => {
+    let valorLimpo = text.replace(',', '.');
+    
+    valorLimpo = valorLimpo.replace(/[^0-9.]/g, '');
+    
+    const partes = valorLimpo.split('.');
+    if (partes.length > 2) {
+      valorLimpo = partes[0] + '.' + partes.slice(1).join('');
+    }
+    
+    setHoras(valorLimpo);
   };
 
   const salvar = async () => {
@@ -77,13 +91,21 @@ export default function AtividadesScreen({ navigation, route }) {
           <View style={styles.card}>
             <View style={{ flex: 1 }}>
               <Text style={styles.cardDesc}>{item.Descricao}</Text>
-              <Text style={styles.cardInfo}>👤 RA: {item.Aluno_RA}  ⏱ {item.Horas_trabalhadas}h</Text>
+              <Text style={styles.cardInfo}>RA: {item.Aluno_RA}</Text>
+              <Text style={styles.cardInfo}>Horas: {item.Horas_trabalhadas}h</Text>
               <View style={[styles.badge, { backgroundColor: COR_STATUS[item.Status] ?? '#94A3B8' }]}>
                 <Text style={styles.badgeTexto}>{item.Status}</Text>
               </View>
             </View>
-            <TouchableOpacity onPress={() => abrirModalEditar(item)} style={styles.icone}><Text style={{ fontSize: 18 }}>✏️</Text></TouchableOpacity>
-            <TouchableOpacity onPress={() => confirmarDeletar(item.ID_Atividade)} style={styles.icone}><Text style={{ fontSize: 18 }}>🗑️</Text></TouchableOpacity>
+            <TouchableOpacity onPress={() => abrirModalEditar(item)} style={styles.icone}>
+              <Image 
+                source={require('../../assets/botao-editar.png')}
+                style={styles.iconeBotaoImagem}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => confirmarDeletar(item.ID_Atividade)} style={styles.icone}>
+              <Ionicons name="trash-outline" size={22} color="#EF4444" />
+            </TouchableOpacity>
           </View>
         )}
       />
@@ -93,7 +115,15 @@ export default function AtividadesScreen({ navigation, route }) {
           <ScrollView contentContainerStyle={styles.modalBox}>
             <Text style={styles.modalTitulo}>{atividadeEditando ? 'Editar Atividade' : 'Nova Atividade'}</Text>
             <InputTexto label="Descrição" value={descricao} onChangeText={setDescricao} placeholder="Descreva a atividade" />
-            <InputTexto label="Horas trabalhadas" value={horas} onChangeText={setHoras} placeholder="Ex: 2.5" keyboardType="numeric" />
+            
+            {/* O onChangeText agora aponta para a nossa função de validação */}
+            <InputTexto 
+              label="Horas trabalhadas" 
+              value={horas} 
+              onChangeText={handleHorasChange} 
+              placeholder="Ex: 2.5" 
+              keyboardType="numeric" 
+            />
 
             <Text style={styles.labelCampo}>Status</Text>
             <View style={styles.situacaoRow}>
@@ -129,7 +159,7 @@ const styles = StyleSheet.create({
   },
   voltar: {
     paddingHorizontal: 20,
-    paddingTop: 16,
+    paddingTop: 50,
   },
   voltarTexto: {
     color: '#0EA5E9',
@@ -195,6 +225,12 @@ const styles = StyleSheet.create({
   icone: {
     padding: 6,
   },
+  iconeBotaoImagem: {
+    width: 22,
+    height: 22,
+    resizeMode: 'contain',
+    tintColor: '#0EA5E9',
+  },
   vazio: {
     textAlign: 'center',
     color: '#94A3B8',
@@ -208,8 +244,8 @@ const styles = StyleSheet.create({
   },
   modalBox: {
     backgroundColor: '#FFF',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
     padding: 24,
   },
   modalTitulo: {

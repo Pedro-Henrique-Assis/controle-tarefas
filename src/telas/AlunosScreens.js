@@ -93,8 +93,8 @@ export default function AlunosScreen() {
             </View>
             <TouchableOpacity onPress={() => abrirModalEditar(item)} style={styles.icone}>
               <Image 
-                source={require('../../assets/botao-editar.png')} // <-- Caminho para sua imagem na pasta assets
-                style={styles.iconeBotaoImagem} // <-- Novo estilo que criaremos
+                source={require('../../assets/botao-editar.png')}
+                style={styles.iconeBotaoImagem}
               />
             </TouchableOpacity>
             <TouchableOpacity onPress={() => confirmarDeletar(item.RA)} style={styles.icone}>
@@ -109,7 +109,7 @@ export default function AlunosScreen() {
           <View style={styles.modalBox}>
             <Text style={styles.modalTitulo}>{editando ? 'Editar Aluno' : 'Novo Aluno'}</Text>
             <InputTexto label="RA" value={ra} onChangeText={setRa} placeholder="Ex: 123456" editable={!editando} keyboardType="numeric"/>
-            <InputTexto label="Nome" value={nome} onChangeText={setNome} placeholder="Nome completo" />
+            <InputTexto label="Nome" value={nome} onChangeText={setNome} placeholder="Nome completo" keyboardType="default"/>
             <BotaoPrimario titulo="Salvar" onPress={salvar} />
             <BotaoPrimario titulo="Cancelar" onPress={() => setModalVisivel(false)} cor="#94A3B8" />
           </View>

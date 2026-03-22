@@ -12,7 +12,7 @@ export const inserirAtividade = async (descricao, status, horasTrabalhadas, trab
 export const buscarAtividades = async () => {
   const db = getDatabase();
   const result = await db.getAllAsync(`SELECT * FROM Atividade;`);
-  return result.rows ?? [];
+  return result ?? [];
 };
 
 export const buscarAtividadesPorTrabalho = async (trabalhoId) => {
@@ -21,7 +21,7 @@ export const buscarAtividadesPorTrabalho = async (trabalhoId) => {
     `SELECT * FROM Atividade WHERE Trabalho_ID = ?;`,
     [trabalhoId]
   );
-  return result.rows ?? [];
+  return result ?? [];
 };
 
 export const buscarAtividadesPorAluno = async (alunoRA) => {
@@ -30,7 +30,7 @@ export const buscarAtividadesPorAluno = async (alunoRA) => {
     `SELECT * FROM Atividade WHERE Aluno_RA = ?;`,
     [alunoRA]
   );
-  return result.rows ?? [];
+  return result ?? [];
 };
 
 export const buscarAtividadePorID = async (id) => {

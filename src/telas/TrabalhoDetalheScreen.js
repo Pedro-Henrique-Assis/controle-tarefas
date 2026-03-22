@@ -50,6 +50,7 @@ const styles = StyleSheet.create({
   },
   voltar: {
     padding: 20,
+    paddingTop: 50,
   },
   voltarTexto: {
     color: '#0EA5E9',

@@ -1,6 +1,8 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Modal, Alert, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Modal, Alert, StyleSheet, SafeAreaView, ScrollView, Platform, Image } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import DateTimePicker from '@react-native-community/datetimepicker'; 
+import { Ionicons } from '@expo/vector-icons';
 import { buscarTrabalhos, inserirTrabalho, atualizarTrabalho, deletarTrabalho } from '../banco-de-dados/trabalhoRepository';
 import { buscarAlunos } from '../banco-de-dados/alunoRepository';
 import { inserirAlunoXTrabalho, buscarAlunosPorTrabalho, deletarAlunoXTrabalho } from '../banco-de-dados/alunoXTrabalhoRepository';
@@ -15,31 +17,82 @@ export default function TrabalhosScreen({ navigation }) {
   const [modalVisivel, setModalVisivel] = useState(false);
   const [nome, setNome] = useState('');
   const [situacao, setSituacao] = useState('pendente');
-  const [dataEntrega, setDataEntrega] = useState('');
   const [alunosDisponiveis, setAlunosDisponiveis] = useState([]);
   const [alunosSelecionados, setAlunosSelecionados] = useState([]);
   const [trabalhoEditando, setTrabalhoEditando] = useState(null);
+
+  const [dataEntrega, setDataEntrega] = useState(''); 
+  const [dataObjeto, setDataObjeto] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   useFocusEffect(useCallback(() => { carregarTrabalhos(); }, []));
 
   const carregarTrabalhos = async () => setTrabalhos(await buscarTrabalhos() || []);
 
   const abrirModalNovo = async () => {
-    setNome(''); setSituacao('pendente'); setDataEntrega('');
-    setAlunosSelecionados([]); setTrabalhoEditando(null);
+    setNome(''); 
+    setSituacao('pendente'); 
+    setDataEntrega('');
+    setDataObjeto(new Date()); 
+    setAlunosSelecionados([]); 
+    setTrabalhoEditando(null);
     setAlunosDisponiveis(await buscarAlunos() || []);
     setModalVisivel(true);
   };
 
   const abrirModalEditar = async (trabalho) => {
-    setNome(trabalho.Nome); setSituacao(trabalho.Situacao);
-    setDataEntrega(trabalho.Data_entrega); setTrabalhoEditando(trabalho);
+    setNome(trabalho.Nome); 
+    setDataEntrega(trabalho.Data_entrega); 
+    
+    let novaSituacao = trabalho.Situacao;
+
+    if (trabalho.Data_entrega) {
+      const partes = trabalho.Data_entrega.split('-');
+      const dataEscolhida = new Date(partes[0], partes[1] - 1, partes[2]);
+      setDataObjeto(dataEscolhida);
+
+      // Inteligência extra: corrige trabalhos antigos que possam ter ficado pendentes no banco
+      const hoje = new Date();
+      hoje.setHours(0, 0, 0, 0);
+      if (dataEscolhida < hoje && novaSituacao === 'pendente') {
+        novaSituacao = 'concluido';
+      }
+    } else {
+      setDataObjeto(new Date());
+    }
+
+    setSituacao(novaSituacao);
+    setTrabalhoEditando(trabalho);
     const alunos = await buscarAlunos() || [];
     const alunosDoTrabalho = await buscarAlunosPorTrabalho(trabalho.ID) || [];
     const rasSelecionados = alunosDoTrabalho.map((a) => a.RA);
     setAlunosDisponiveis(alunos);
     setAlunosSelecionados(rasSelecionados);
     setModalVisivel(true);
+  };
+
+  const onChangeData = (event, selectedDate) => {
+    if (Platform.OS === 'android') {
+      setShowDatePicker(false); 
+    }
+    
+    if (selectedDate) {
+      setDataObjeto(selectedDate); 
+      
+      const ano = selectedDate.getFullYear();
+      const mes = String(selectedDate.getMonth() + 1).padStart(2, '0');
+      const dia = String(selectedDate.getDate()).padStart(2, '0');
+      setDataEntrega(`${ano}-${mes}-${dia}`); 
+
+      // Se escolher uma data passada e estiver 'pendente', muda pra 'concluido' automaticamente
+      const hoje = new Date();
+      hoje.setHours(0, 0, 0, 0);
+      const dataEscolhida = new Date(ano, selectedDate.getMonth(), selectedDate.getDate());
+      
+      if (dataEscolhida < hoje && situacao === 'pendente') {
+        setSituacao('concluido');
+      }
+    }
   };
 
   const toggleAluno = (ra) => {
@@ -49,9 +102,11 @@ export default function TrabalhosScreen({ navigation }) {
   };
 
   const salvar = async () => {
-    if (!nome.trim() || !dataEntrega.trim()) return Alert.alert('Atenção', 'Preencha nome e data de entrega.');
+    if (!nome.trim() || !dataEntrega.trim()) return Alert.alert('Atenção', 'Preencha nome e selecione a data de entrega.');
     if (alunosSelecionados.length === 0) return Alert.alert('Atenção', 'Selecione ao menos um aluno.');
     
+    // O alerta antigo foi removido daqui!
+
     if (trabalhoEditando) {
       await atualizarTrabalho(trabalhoEditando.ID, nome, situacao, dataEntrega);
       const vinculadosAntigos = await buscarAlunosPorTrabalho(trabalhoEditando.ID) || [];
@@ -76,6 +131,21 @@ export default function TrabalhosScreen({ navigation }) {
     ]);
   };
 
+  // Verifica ANTES de renderizar a tela se a data informada está no passado
+  let dataNoPassado = false;
+  if (dataEntrega) {
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    const partes = dataEntrega.split('-');
+    const dataVerificada = new Date(partes[0], partes[1] - 1, partes[2]);
+    if (dataVerificada < hoje) {
+      dataNoPassado = true;
+    }
+  }
+
+  // Se a data for no passado, cria uma lista de botões sem a opção 'pendente'
+  const situacoesExibidas = dataNoPassado ? SITUACOES.filter(s => s !== 'pendente') : SITUACOES;
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.cabecalho}>
@@ -92,20 +162,23 @@ export default function TrabalhosScreen({ navigation }) {
           <View style={styles.card}>
             <View style={{ flex: 1 }}>
               <Text style={styles.cardTitulo}>{item.Nome}</Text>
-              <Text style={styles.cardData}>📅 {item.Data_entrega}</Text>
+              <View style={styles.dataBox}>
+                <Image source={require('../../assets/calendar.png')} style={styles.calendarIcon} />
+                <Text style={styles.cardData}>{item.Data_entrega}</Text>
+              </View>
               <View style={[styles.badge, { backgroundColor: COR_SITUACAO[item.Situacao] ?? '#94A3B8' }]}>
                 <Text style={styles.badgeTexto}>{item.Situacao}</Text>
               </View>
             </View>
             <View style={styles.acoes}>
               <TouchableOpacity onPress={() => navigation.navigate('TrabalhoDetalhe', { trabalho: item })} style={styles.icone}>
-                <Text style={{ fontSize: 18 }}>📋</Text>
+                <Image source={require('../../assets/lupa.png')} style={styles.iconeBotaoLupa} />
               </TouchableOpacity>
               <TouchableOpacity onPress={() => abrirModalEditar(item)} style={styles.icone}>
-                <Text style={{ fontSize: 18 }}>✏️</Text>
+                <Image source={require('../../assets/botao-editar.png')} style={styles.iconeBotaoImagem} />
               </TouchableOpacity>
               <TouchableOpacity onPress={() => confirmarDeletar(item.ID)} style={styles.icone}>
-                <Text style={{ fontSize: 18 }}>🗑️</Text>
+                <Ionicons name="trash-outline" size={22} color="#EF4444" />
               </TouchableOpacity>
             </View>
           </View>
@@ -116,12 +189,29 @@ export default function TrabalhosScreen({ navigation }) {
         <View style={styles.modalFundo}>
           <ScrollView contentContainerStyle={styles.modalBox}>
             <Text style={styles.modalTitulo}>{trabalhoEditando ? 'Editar Trabalho' : 'Novo Trabalho'}</Text>
+            
             <InputTexto label="Nome do trabalho" value={nome} onChangeText={setNome} placeholder="Ex: Projeto de TCC" />
-            <InputTexto label="Data de entrega (YYYY-MM-DD)" value={dataEntrega} onChangeText={setDataEntrega} placeholder="Ex: 2025-12-31" />
+
+            <Text style={styles.labelSituacao}>Data de entrega</Text>
+            <TouchableOpacity style={styles.botaoData} onPress={() => setShowDatePicker(true)}>
+              <Text style={dataEntrega ? styles.textoData : styles.textoPlaceholder}>
+                {dataEntrega ? dataEntrega : "Toque para selecionar a data"}
+              </Text>
+            </TouchableOpacity>
+
+            {showDatePicker && (
+              <DateTimePicker
+                value={dataObjeto}
+                mode="date"
+                display="default"
+                onChange={onChangeData}
+              />
+            )}
 
             <Text style={styles.labelSituacao}>Situação</Text>
             <View style={styles.situacaoRow}>
-              {SITUACOES.map((s) => (
+              {/* Agora o map varre a lista de 'situacoesExibidas' filtrada dinamicamente */}
+              {situacoesExibidas.map((s) => (
                 <TouchableOpacity key={s} onPress={() => setSituacao(s)} style={[styles.situacaoBotao, situacao === s && { backgroundColor: COR_SITUACAO[s] }]}>
                   <Text style={[styles.situacaoTexto, situacao === s && { color: '#FFF' }]}>{s}</Text>
                 </TouchableOpacity>
@@ -191,10 +281,20 @@ const styles = StyleSheet.create({
     color: '#1E293B',
     marginBottom: 4,
   },
+  dataBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  calendarIcon: {
+    width: 18,
+    height: 18,
+    marginRight: 6,
+    tintColor: '#64748B',
+  },
   cardData: {
     fontSize: 13,
     color: '#64748B',
-    marginBottom: 6,
   },
   badge: {
     alignSelf: 'flex-start',
@@ -209,13 +309,26 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize',
   },
   acoes: {
-    flexDirection: 'column',
+    flexDirection: 'row',
     alignItems: 'center',
   },
   icone: {
     padding: 4,
-    marginVertical: 2,
+    marginHorizontal: 2,
   },
+  iconeBotaoImagem: {
+    width: 22,
+    height: 22,
+    resizeMode: 'contain',
+    tintColor: '#0EA5E9',
+  },
+  iconeBotaoLupa: {
+    width: 22,
+    height: 22,
+    resizeMode: 'contain',
+    tintColor: '#000000',
+  },
+
   vazio: {
     textAlign: 'center',
     color: '#94A3B8',
@@ -229,8 +342,8 @@ const styles = StyleSheet.create({
   },
   modalBox: {
     backgroundColor: '#FFF',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
     padding: 24,
   },
   modalTitulo: {
@@ -245,6 +358,23 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginBottom: 8,
     marginTop: 4,
+  },
+  botaoData: {
+    borderWidth: 1,
+    borderColor: '#CBD5E1',
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    marginBottom: 16,
+    backgroundColor: '#F8FAFC',
+  },
+  textoData: {
+    color: '#1E293B',
+    fontSize: 14,
+  },
+  textoPlaceholder: {
+    color: '#94A3B8',
+    fontSize: 14,
   },
   situacaoRow: {
     flexDirection: 'row',

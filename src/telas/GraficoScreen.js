@@ -37,8 +37,8 @@ export default function GraficoScreen({ navigation, route }) {
       </TouchableOpacity>
 
       <ScrollView contentContainerStyle={styles.conteudo}>
-        <Text style={styles.titulo}>📊 Progresso</Text>
-        <Text style={styles.subtitulo}>{trabalho.Nome}</Text>
+        <Text style={styles.titulo}>Progresso</Text>
+        <Text style={styles.subtitulo}>Atividade: {trabalho.Nome}</Text>
 
         <View style={styles.percentualContainer}>
           <View style={styles.circulo}>
@@ -84,7 +84,8 @@ export default function GraficoScreen({ navigation, route }) {
             <View style={[styles.atividadePonto, { backgroundColor: COR_STATUS[a.Status] ?? '#94A3B8' }]} />
             <View style={{ flex: 1 }}>
               <Text style={styles.atividadeDesc}>{a.Descricao}</Text>
-              <Text style={styles.atividadeInfo}>⏱ {a.Horas_trabalhadas}h · 👤 RA: {a.Aluno_RA}</Text>
+              <Text style={styles.atividadeInfo}>RA: {a.Aluno_RA}</Text>
+              <Text style={styles.atividadeInfo}>Horas: {a.Horas_trabalhadas}h</Text>
             </View>
             <Text style={[styles.atividadeStatus, { color: COR_STATUS[a.Status] ?? '#94A3B8' }]}>{a.Status}</Text>
           </View>
@@ -101,7 +102,7 @@ const styles = StyleSheet.create({
   },
   voltar: {
     paddingHorizontal: 20,
-    paddingTop: 16,
+    paddingTop: 50,
   },
   voltarTexto: {
     color: '#0EA5E9',

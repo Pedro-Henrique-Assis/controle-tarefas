@@ -44,14 +44,54 @@ export default function TrabalhoDetalheScreen({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F0F9FF' },
-  voltar: { padding: 20 },
-  voltarTexto: { color: '#0EA5E9', fontSize: 16, fontWeight: '600' },
-  conteudo: { paddingHorizontal: 20, paddingBottom: 40 },
-  titulo: { fontSize: 22, fontWeight: 'bold', color: '#1E293B', marginBottom: 8 },
-  info: { fontSize: 15, color: '#475569', marginBottom: 6 },
-  secao: { fontSize: 16, fontWeight: 'bold', color: '#0EA5E9', marginTop: 20, marginBottom: 10 },
-  alunoCard: { backgroundColor: '#FFF', borderRadius: 10, padding: 14, marginBottom: 8, elevation: 1 },
-  alunoNome: { fontSize: 15, fontWeight: 'bold', color: '#1E293B' },
-  alunoRA: { fontSize: 13, color: '#64748B' },
+  container: {
+    flex: 1,
+    backgroundColor: '#F0F9FF',
+  },
+  voltar: {
+    padding: 20,
+  },
+  voltarTexto: {
+    color: '#0EA5E9',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  conteudo: {
+    paddingHorizontal: 20,
+    paddingBottom: 40,
+  },
+  titulo: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#1E293B',
+    marginBottom: 8,
+  },
+  info: {
+    fontSize: 15,
+    color: '#475569',
+    marginBottom: 6,
+  },
+  secao: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#0EA5E9',
+    marginTop: 20,
+    marginBottom: 10,
+  },
+  alunoCard: {
+    backgroundColor: '#FFF',
+    borderRadius: 10,
+    padding: 14,
+    marginBottom: 8,
+    elevation: 1,
+  },
+  alunoNome: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: '#1E293B',
+  },
+  alunoRA: {
+    fontSize: 13,
+    color: '#64748B',
+  },
 });

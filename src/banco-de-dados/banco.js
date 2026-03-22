@@ -1,18 +1,14 @@
-import { open } from '@op-engineering/op-sqlite';
 import { createTables } from './migration';
+
+import * as SQLite from 'expo-sqlite';
 
 let db = null;
 
-export const getDatabase = () => {
-  if (!db) {
-    db = open({ name: 'ControleTrabalho.db' });
+export async function getDbConnection() {
+    return await SQLite.openDatabaseAsync('ControleTrabalho.db');
+}
 
-    // Habilita o suporte a chaves estrangeiras no SQLite
-    db.execute('PRAGMA foreign_keys = ON;');
-
-    // Cria as tabelas se ainda não existirem
-    createTables(db);
-  }
-
-  return db;
-};
+export async function initializeDatabase() {
+    const db = await getDbConnection();
+    await createTables(db);
+}

@@ -1,44 +1,44 @@
-import { getDatabase } from './banco';
+import { getDbConnection } from './banco';
 
 // CREATE
-export const inserirAluno = (ra, nome) => {
-  const db = getDatabase();
-  db.execute(
+export const inserirAluno = async (ra, nome) => {
+  const db = await getDbConnection();
+  await db.runAsync(
     `INSERT INTO Aluno (RA, Nome) VALUES (?, ?);`,
     [ra, nome]
   );
 };
 
 // READ - Buscar todos
-export const buscarAlunos = () => {
-  const db = getDatabase();
-  const result = db.execute(`SELECT * FROM Aluno;`);
-  return result.rows?._array ?? [];
+export const buscarAlunos = async () => {
+  const db = await getDbConnection();
+  const result = await db.getAllAsync(`SELECT * FROM Aluno;`);
+  return result.rows ?? [];
 };
 
 // READ - Buscar por RA
-export const buscarAlunoPorRA = (ra) => {
-  const db = getDatabase();
-  const result = db.execute(
+export const buscarAlunoPorRA = async (ra) => {
+  const db = await getDbConnection();
+  const result = await db.getFirstAsync(
     `SELECT * FROM Aluno WHERE RA = ?;`,
     [ra]
   );
-  return result.rows?._array[0] ?? null;
+  return result ?? null;
 };
 
 // UPDATE
-export const atualizarAluno = (ra, nome) => {
-  const db = getDatabase();
-  db.execute(
+export const atualizarAluno = async (ra, nome) => {
+  const db = await getDbConnection();
+  await db.runAsync(
     `UPDATE Aluno SET Nome = ? WHERE RA = ?;`,
     [nome, ra]
   );
 };
 
 // DELETE
-export const deletarAluno = (ra) => {
-  const db = getDatabase();
-  db.execute(
+export const deletarAluno = async (ra) => {
+  const db = await getDbConnection();
+  await db.runAsync(
     `DELETE FROM Aluno WHERE RA = ?;`,
     [ra]
   );

@@ -1,50 +1,50 @@
-import { getDatabase } from './banco';
+import { getDbConnection } from './banco';
 
-export const inserirAtividade = (descricao, status, horasTrabalhadas, trabalhoId, alunoRA) => {
-  const db = getDatabase();
-  db.execute(
+export const inserirAtividade = async (descricao, status, horasTrabalhadas, trabalhoId, alunoRA) => {
+  const db = await getDbConnection();
+  await db.runAsync(
     `INSERT INTO Atividade (Descricao, Status, Horas_trabalhadas, Trabalho_ID, Aluno_RA)
      VALUES (?, ?, ?, ?, ?);`,
     [descricao, status, horasTrabalhadas, trabalhoId, alunoRA]
   );
 };
 
-export const buscarAtividades = () => {
-  const db = getDatabase();
-  const result = db.execute(`SELECT * FROM Atividade;`);
-  return result.rows?._array ?? [];
+export const buscarAtividades = async () => {
+  const db = await getDbConnection();
+  const result = await db.getAllAsync(`SELECT * FROM Atividade;`);
+  return result.rows ?? [];
 };
 
-export const buscarAtividadesPorTrabalho = (trabalhoId) => {
-  const db = getDatabase();
-  const result = db.execute(
+export const buscarAtividadesPorTrabalho = async (trabalhoId) => {
+  const db = await getDbConnection();
+  const result = await db.getAllAsync(
     `SELECT * FROM Atividade WHERE Trabalho_ID = ?;`,
     [trabalhoId]
   );
-  return result.rows?._array ?? [];
+  return result.rows ?? [];
 };
 
-export const buscarAtividadesPorAluno = (alunoRA) => {
-  const db = getDatabase();
-  const result = db.execute(
+export const buscarAtividadesPorAluno = async (alunoRA) => {
+  const db = await getDbConnection();
+  const result = await db.getAllAsync(
     `SELECT * FROM Atividade WHERE Aluno_RA = ?;`,
     [alunoRA]
   );
-  return result.rows?._array ?? [];
+  return result.rows ?? [];
 };
 
-export const buscarAtividadePorID = (id) => {
-  const db = getDatabase();
-  const result = db.execute(
+export const buscarAtividadePorID = async (id) => {
+  const db = await getDbConnection();
+  const result = await db.getFirstAsync(
     `SELECT * FROM Atividade WHERE ID_Atividade = ?;`,
     [id]
   );
-  return result.rows?._array[0] ?? null;
+  return result ?? null;
 };
 
-export const atualizarAtividade = (id, descricao, status, horasTrabalhadas, trabalhoId, alunoRA) => {
-  const db = getDatabase();
-  db.execute(
+export const atualizarAtividade = async (id, descricao, status, horasTrabalhadas, trabalhoId, alunoRA) => {
+  const db = await getDbConnection();
+  await db.runAsync(
     `UPDATE Atividade
      SET Descricao = ?, Status = ?, Horas_trabalhadas = ?, Trabalho_ID = ?, Aluno_RA = ?
      WHERE ID_Atividade = ?;`,
@@ -52,15 +52,15 @@ export const atualizarAtividade = (id, descricao, status, horasTrabalhadas, trab
   );
 };
 
-export const atualizarStatusAtividade = (id, novoStatus) => {
-  const db = getDatabase();
-  db.execute(
+export const atualizarStatusAtividade = async (id, novoStatus) => {
+  const db = await getDbConnection();
+  await db.runAsync(
     `UPDATE Atividade SET Status = ? WHERE ID_Atividade = ?;`,
     [novoStatus, id]
   );
 };
 
-export const deletarAtividade = (id) => {
-  const db = getDatabase();
-  db.execute(`DELETE FROM Atividade WHERE ID_Atividade = ?;`, [id]);
+export const deletarAtividade = async (id) => {
+  const db = await getDbConnection();
+  await db.runAsync(`DELETE FROM Atividade WHERE ID_Atividade = ?;`, [id]);
 };

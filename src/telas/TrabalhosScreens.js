@@ -148,7 +148,7 @@ export default function TrabalhosScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F0F9FF' },
-  cabecalho: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 20 },
+  cabecalho: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 20, paddingTop: 50 },
   titulo: { fontSize: 22, fontWeight: 'bold', color: '#0EA5E9' },
   botaoNovo: { backgroundColor: '#0EA5E9', paddingHorizontal: 16, paddingVertical: 8, borderRadius: 10 },
   botaoNovoTexto: { color: '#FFF', fontWeight: 'bold' },

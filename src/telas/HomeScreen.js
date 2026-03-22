@@ -1,13 +1,13 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, SafeAreaView, Image } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { buscarTrabalhos } from '../banco-de-dados/trabalhoRepository';
 
 const MESES = [
-  { numero: 1, nome: 'Jan' }, { numero: 2, nome: 'Fev' }, { numero: 3, nome: 'Mar' },
-  { numero: 4, nome: 'Abr' }, { numero: 5, nome: 'Mai' }, { numero: 6, nome: 'Jun' },
-  { numero: 7, nome: 'Jul' }, { numero: 8, nome: 'Ago' }, { numero: 9, nome: 'Set' },
-  { numero: 10, nome: 'Out' }, { numero: 11, nome: 'Nov' }, { numero: 12, nome: 'Dez' },
+  { numero: 1, nome: 'Jan', nomeCompleto: 'Janeiro' }, { numero: 2, nome: 'Fev', nomeCompleto: 'Fevereiro' }, { numero: 3, nome: 'Mar', nomeCompleto: 'Março' },
+  { numero: 4, nome: 'Abr', nomeCompleto: 'Abril' }, { numero: 5, nome: 'Mai', nomeCompleto: 'Maio' }, { numero: 6, nome: 'Jun', nomeCompleto: 'Junho' },
+  { numero: 7, nome: 'Jul', nomeCompleto: 'Julho' }, { numero: 8, nome: 'Ago', nomeCompleto: 'Agosto' }, { numero: 9, nome: 'Set', nomeCompleto: 'Setembro' },
+  { numero: 10, nome: 'Out', nomeCompleto: 'Outubro' }, { numero: 11, nome: 'Nov', nomeCompleto: 'Novembro' }, { numero: 12, nome: 'Dez', nomeCompleto: 'Dezembro' },
 ];
 
 const COR_SITUACAO = { concluido: '#22C55E', cancelado: '#EF4444', pendente: '#F59E0B' };
@@ -42,7 +42,13 @@ export default function HomeScreen() {
       style={[styles.mesCard, mesSelecionado === item.numero && styles.mesCardAtivo]}
       onPress={() => setMesSelecionado(item.numero)}
     >
-      <Text style={styles.mesIcone}>📅</Text>
+      <Image 
+        source={require('../../assets/calendar.png')} 
+        style={[
+          styles.mesIconeImagem, 
+          mesSelecionado === item.numero && styles.mesIconeImagemAtiva
+        ]} 
+      />
       <Text style={[styles.mesNome, mesSelecionado === item.numero && styles.mesNomeAtivo]}>
         {item.nome}
       </Text>
@@ -66,10 +72,10 @@ export default function HomeScreen() {
       <Text style={styles.titulo}>Controle de Trabalhos</Text>
       <FlatList
         data={MESES} horizontal keyExtractor={(item) => String(item.numero)}
-        showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollerLista}
+        showsHorizontalScrollIndicator={false} style={{ flexGrow: 0 }} contentContainerStyle={styles.scrollerLista}
         renderItem={renderMes}
       />
-      <Text style={styles.subtitulo}>Trabalhos de {MESES[mesSelecionado - 1].nome}</Text>
+      <Text style={styles.subtitulo}>Trabalhos que vencem em {MESES[mesSelecionado - 1].nomeCompleto}</Text>
       <FlatList
         data={trabalhos} keyExtractor={(item) => String(item.ID)}
         contentContainerStyle={styles.listaContainer}
@@ -86,10 +92,11 @@ const styles = StyleSheet.create({
   scrollerLista: { paddingHorizontal: 16, paddingBottom: 0 },
   mesCard: { alignItems: 'center', backgroundColor: '#FFF', borderRadius: 12, padding: 12, marginRight: 10, width: 64, height: 70, borderWidth: 2, borderColor: 'transparent', elevation: 2 },
   mesCardAtivo: { borderColor: '#0EA5E9', backgroundColor: '#E0F2FE' },
-  mesIcone: { fontSize: 22 },
+  mesIconeImagem: { width: 24, height: 24 },
+  mesIconeImagemAtiva: { tintColor: '#0EA5E9' },
   mesNome: { fontSize: 12, color: '#64748B', marginTop: 4, fontWeight: '500' },
   mesNomeAtivo: { color: '#0EA5E9', fontWeight: 'bold' },
-  subtitulo: { fontSize: 16, fontWeight: '600', color: '#475569', paddingHorizontal: 20, marginTop: 0, marginBottom: 8 },
+  subtitulo: { fontSize: 16, fontWeight: '600', color: '#475569', paddingHorizontal: 20, marginTop: 16, marginBottom: 8 },
   listaContainer: { paddingHorizontal: 16 },
   card: { backgroundColor: '#FFF', borderRadius: 12, padding: 16, marginBottom: 12, elevation: 2 },
   cardTopo: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 },

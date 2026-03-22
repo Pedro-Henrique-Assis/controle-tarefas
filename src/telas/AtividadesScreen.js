@@ -22,9 +22,9 @@ export default function AtividadesScreen({ navigation, route }) {
 
   useFocusEffect(useCallback(() => { carregar(); }, []));
 
-  const carregar = () => {
-    setAtividades(buscarAtividadesPorTrabalho(trabalho.ID));
-    setAlunosDoTrabalho(buscarAlunosPorTrabalho(trabalho.ID));
+  const carregar = async () => {
+    setAtividades(await buscarAtividadesPorTrabalho(trabalho.ID) || []);
+    setAlunosDoTrabalho(await buscarAlunosPorTrabalho(trabalho.ID) || []);
   };
 
   const abrirModalNovo = () => {
@@ -38,24 +38,23 @@ export default function AtividadesScreen({ navigation, route }) {
     setAtividadeEditando(a); setModalVisivel(true);
   };
 
-  const salvar = () => {
-    if (!descricao.trim() || !alunoRA) {
-      return Alert.alert('Atenção', 'Preencha descrição e selecione um aluno.');
-    }
+  const salvar = async () => {
+    if (!descricao.trim() || !alunoRA) return Alert.alert('Atenção', 'Preencha descrição e selecione um aluno.');
+    
     const horasNum = parseFloat(horas) || 0;
     if (atividadeEditando) {
-      atualizarAtividade(atividadeEditando.ID_Atividade, descricao, status, horasNum, trabalho.ID, alunoRA);
+      await atualizarAtividade(atividadeEditando.ID_Atividade, descricao, status, horasNum, trabalho.ID, alunoRA);
     } else {
-      inserirAtividade(descricao, status, horasNum, trabalho.ID, alunoRA);
+      await inserirAtividade(descricao, status, horasNum, trabalho.ID, alunoRA);
     }
     setModalVisivel(false);
-    carregar();
+    await carregar();
   };
 
   const confirmarDeletar = (id) => {
     Alert.alert('Excluir atividade', 'Deseja excluir esta atividade?', [
       { text: 'Cancelar', style: 'cancel' },
-      { text: 'Excluir', style: 'destructive', onPress: () => { deletarAtividade(id); carregar(); } },
+      { text: 'Excluir', style: 'destructive', onPress: async () => { await deletarAtividade(id); carregar(); } },
     ]);
   };
 
@@ -64,7 +63,6 @@ export default function AtividadesScreen({ navigation, route }) {
       <TouchableOpacity onPress={() => navigation.goBack()} style={styles.voltar}>
         <Text style={styles.voltarTexto}>← Voltar</Text>
       </TouchableOpacity>
-
       <View style={styles.cabecalho}>
         <Text style={styles.titulo}>Atividades</Text>
         <TouchableOpacity style={styles.botaoNovo} onPress={abrirModalNovo}>
@@ -73,10 +71,8 @@ export default function AtividadesScreen({ navigation, route }) {
       </View>
 
       <FlatList
-        data={atividades}
-        keyExtractor={(item) => String(item.ID_Atividade)}
-        contentContainerStyle={styles.lista}
-        ListEmptyComponent={<Text style={styles.vazio}>Nenhuma atividade cadastrada.</Text>}
+        data={atividades} keyExtractor={(item) => String(item.ID_Atividade)}
+        contentContainerStyle={styles.lista} ListEmptyComponent={<Text style={styles.vazio}>Nenhuma atividade cadastrada.</Text>}
         renderItem={({ item }) => (
           <View style={styles.card}>
             <View style={{ flex: 1 }}>
@@ -86,12 +82,8 @@ export default function AtividadesScreen({ navigation, route }) {
                 <Text style={styles.badgeTexto}>{item.Status}</Text>
               </View>
             </View>
-            <TouchableOpacity onPress={() => abrirModalEditar(item)} style={styles.icone}>
-              <Text style={{ fontSize: 18 }}>✏️</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => confirmarDeletar(item.ID_Atividade)} style={styles.icone}>
-              <Text style={{ fontSize: 18 }}>🗑️</Text>
-            </TouchableOpacity>
+            <TouchableOpacity onPress={() => abrirModalEditar(item)} style={styles.icone}><Text style={{ fontSize: 18 }}>✏️</Text></TouchableOpacity>
+            <TouchableOpacity onPress={() => confirmarDeletar(item.ID_Atividade)} style={styles.icone}><Text style={{ fontSize: 18 }}>🗑️</Text></TouchableOpacity>
           </View>
         )}
       />
@@ -106,10 +98,7 @@ export default function AtividadesScreen({ navigation, route }) {
             <Text style={styles.labelCampo}>Status</Text>
             <View style={styles.situacaoRow}>
               {SITUACOES.map((s) => (
-                <TouchableOpacity
-                  key={s} onPress={() => setStatus(s)}
-                  style={[styles.situacaoBotao, status === s && { backgroundColor: COR_STATUS[s] }]}
-                >
+                <TouchableOpacity key={s} onPress={() => setStatus(s)} style={[styles.situacaoBotao, status === s && { backgroundColor: COR_STATUS[s] }]}>
                   <Text style={[styles.situacaoTexto, status === s && { color: '#FFF' }]}>{s}</Text>
                 </TouchableOpacity>
               ))}
@@ -117,10 +106,7 @@ export default function AtividadesScreen({ navigation, route }) {
 
             <Text style={styles.labelCampo}>Aluno responsável</Text>
             {alunosDoTrabalho.map((a) => (
-              <TouchableOpacity
-                key={a.RA} onPress={() => setAlunoRA(a.RA)}
-                style={[styles.alunoItem, alunoRA === a.RA && styles.alunoItemAtivo]}
-              >
+              <TouchableOpacity key={a.RA} onPress={() => setAlunoRA(a.RA)} style={[styles.alunoItem, alunoRA === a.RA && styles.alunoItemAtivo]}>
                 <Text style={alunoRA === a.RA ? styles.alunoTextoAtivo : styles.alunoTexto}>
                   {alunoRA === a.RA ? '🔵' : '⚪'} {a.Nome}
                 </Text>

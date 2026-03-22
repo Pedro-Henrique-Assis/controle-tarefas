@@ -1,11 +1,19 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
 import { buscarAlunosPorTrabalho } from '../banco-de-dados/alunoXTrabalhoRepository';
 import BotaoPrimario from '../componentes/BotaoPrimario';
 
 export default function TrabalhoDetalheScreen({ navigation, route }) {
   const { trabalho } = route.params;
-  const alunos = buscarAlunosPorTrabalho(trabalho.ID);
+  const [alunos, setAlunos] = useState([]);
+
+  useEffect(() => {
+    const carregar = async () => {
+      const vinculados = await buscarAlunosPorTrabalho(trabalho.ID);
+      setAlunos(vinculados || []);
+    };
+    carregar();
+  }, [trabalho.ID]);
 
   return (
     <SafeAreaView style={styles.container}>

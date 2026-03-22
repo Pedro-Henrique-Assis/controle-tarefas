@@ -1,7 +1,7 @@
-import { getDbConnection } from './banco';
+import { getDatabase } from './banco';
 
 export const inserirAtividade = async (descricao, status, horasTrabalhadas, trabalhoId, alunoRA) => {
-  const db = await getDbConnection();
+  const db = getDatabase();
   await db.runAsync(
     `INSERT INTO Atividade (Descricao, Status, Horas_trabalhadas, Trabalho_ID, Aluno_RA)
      VALUES (?, ?, ?, ?, ?);`,
@@ -10,13 +10,13 @@ export const inserirAtividade = async (descricao, status, horasTrabalhadas, trab
 };
 
 export const buscarAtividades = async () => {
-  const db = await getDbConnection();
+  const db = getDatabase();
   const result = await db.getAllAsync(`SELECT * FROM Atividade;`);
   return result.rows ?? [];
 };
 
 export const buscarAtividadesPorTrabalho = async (trabalhoId) => {
-  const db = await getDbConnection();
+  const db = getDatabase();
   const result = await db.getAllAsync(
     `SELECT * FROM Atividade WHERE Trabalho_ID = ?;`,
     [trabalhoId]
@@ -25,7 +25,7 @@ export const buscarAtividadesPorTrabalho = async (trabalhoId) => {
 };
 
 export const buscarAtividadesPorAluno = async (alunoRA) => {
-  const db = await getDbConnection();
+  const db = getDatabase();
   const result = await db.getAllAsync(
     `SELECT * FROM Atividade WHERE Aluno_RA = ?;`,
     [alunoRA]
@@ -34,7 +34,7 @@ export const buscarAtividadesPorAluno = async (alunoRA) => {
 };
 
 export const buscarAtividadePorID = async (id) => {
-  const db = await getDbConnection();
+  const db = getDatabase();
   const result = await db.getFirstAsync(
     `SELECT * FROM Atividade WHERE ID_Atividade = ?;`,
     [id]
@@ -43,7 +43,7 @@ export const buscarAtividadePorID = async (id) => {
 };
 
 export const atualizarAtividade = async (id, descricao, status, horasTrabalhadas, trabalhoId, alunoRA) => {
-  const db = await getDbConnection();
+  const db = getDatabase();
   await db.runAsync(
     `UPDATE Atividade
      SET Descricao = ?, Status = ?, Horas_trabalhadas = ?, Trabalho_ID = ?, Aluno_RA = ?
@@ -53,7 +53,7 @@ export const atualizarAtividade = async (id, descricao, status, horasTrabalhadas
 };
 
 export const atualizarStatusAtividade = async (id, novoStatus) => {
-  const db = await getDbConnection();
+  const db = getDatabase();
   await db.runAsync(
     `UPDATE Atividade SET Status = ? WHERE ID_Atividade = ?;`,
     [novoStatus, id]
@@ -61,6 +61,6 @@ export const atualizarStatusAtividade = async (id, novoStatus) => {
 };
 
 export const deletarAtividade = async (id) => {
-  const db = await getDbConnection();
+  const db = getDatabase();
   await db.runAsync(`DELETE FROM Atividade WHERE ID_Atividade = ?;`, [id]);
 };

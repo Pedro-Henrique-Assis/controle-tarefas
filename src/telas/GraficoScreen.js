@@ -1,12 +1,21 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, ScrollView, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { buscarAtividadesPorTrabalho } from '../banco-de-dados/atividadeRepository';
 
 const COR_STATUS = { concluida: '#22C55E', cancelada: '#EF4444', pendente: '#F59E0B' };
 
 export default function GraficoScreen({ navigation, route }) {
   const { trabalho } = route.params;
-  const atividades = buscarAtividadesPorTrabalho(trabalho.ID) || [];
+  const [atividades, setAtividades] = useState([]);
+
+  useFocusEffect(useCallback(() => {
+    const carregar = async () => {
+      const res = await buscarAtividadesPorTrabalho(trabalho.ID);
+      setAtividades(res || []);
+    };
+    carregar();
+  }, [trabalho.ID]));
 
   const total = atividades.length;
   const concluidas = atividades.filter((a) => a.Status === 'concluida').length;
@@ -19,7 +28,6 @@ export default function GraficoScreen({ navigation, route }) {
     .filter((a) => a.Status === 'concluida')
     .reduce((soma, a) => soma + (a.Horas_trabalhadas || 0), 0);
 
-  // Calcula a largura proporcional de cada barra
   const larguraBarra = (quantidade) => (total > 0 ? (quantidade / total) * 100 : 0);
 
   return (
@@ -32,7 +40,6 @@ export default function GraficoScreen({ navigation, route }) {
         <Text style={styles.titulo}>📊 Progresso</Text>
         <Text style={styles.subtitulo}>{trabalho.Nome}</Text>
 
-        {/* Círculo de percentual */}
         <View style={styles.percentualContainer}>
           <View style={styles.circulo}>
             <Text style={styles.percentualNumero}>{percentual}%</Text>
@@ -40,7 +47,6 @@ export default function GraficoScreen({ navigation, route }) {
           </View>
         </View>
 
-        {/* Barras por status */}
         <Text style={styles.secao}>Atividades por status</Text>
         {[
           { status: 'concluida', quantidade: concluidas },
@@ -50,18 +56,12 @@ export default function GraficoScreen({ navigation, route }) {
           <View key={status} style={styles.barraContainer}>
             <Text style={styles.barraLabel}>{status}</Text>
             <View style={styles.barraTrilho}>
-              <View
-                style={[
-                  styles.barraPreenchimento,
-                  { width: `${larguraBarra(quantidade)}%`, backgroundColor: COR_STATUS[status] },
-                ]}
-              />
+              <View style={[styles.barraPreenchimento, { width: `${larguraBarra(quantidade)}%`, backgroundColor: COR_STATUS[status] }]} />
             </View>
             <Text style={styles.barraValor}>{quantidade}</Text>
           </View>
         ))}
 
-        {/* Resumo geral */}
         <Text style={styles.secao}>Resumo geral</Text>
         <View style={styles.resumoGrid}>
           <View style={[styles.resumoCard, { borderLeftColor: '#0EA5E9' }]}>
@@ -78,7 +78,6 @@ export default function GraficoScreen({ navigation, route }) {
           </View>
         </View>
 
-        {/* Lista de atividades */}
         <Text style={styles.secao}>Detalhamento</Text>
         {atividades.map((a) => (
           <View key={a.ID_Atividade} style={styles.atividadeItem}>
@@ -87,9 +86,7 @@ export default function GraficoScreen({ navigation, route }) {
               <Text style={styles.atividadeDesc}>{a.Descricao}</Text>
               <Text style={styles.atividadeInfo}>⏱ {a.Horas_trabalhadas}h · 👤 RA: {a.Aluno_RA}</Text>
             </View>
-            <Text style={[styles.atividadeStatus, { color: COR_STATUS[a.Status] ?? '#94A3B8' }]}>
-              {a.Status}
-            </Text>
+            <Text style={[styles.atividadeStatus, { color: COR_STATUS[a.Status] ?? '#94A3B8' }]}>{a.Status}</Text>
           </View>
         ))}
       </ScrollView>
@@ -105,11 +102,7 @@ const styles = StyleSheet.create({
   titulo: { fontSize: 22, fontWeight: 'bold', color: '#0EA5E9', marginTop: 8 },
   subtitulo: { fontSize: 15, color: '#475569', marginBottom: 20 },
   percentualContainer: { alignItems: 'center', marginVertical: 20 },
-  circulo: {
-    width: 130, height: 130, borderRadius: 65,
-    backgroundColor: '#0EA5E9', alignItems: 'center', justifyContent: 'center',
-    shadowColor: '#0EA5E9', shadowOpacity: 0.4, shadowRadius: 12, elevation: 6,
-  },
+  circulo: { width: 130, height: 130, borderRadius: 65, backgroundColor: '#0EA5E9', alignItems: 'center', justifyContent: 'center', shadowColor: '#0EA5E9', shadowOpacity: 0.4, shadowRadius: 12, elevation: 6 },
   percentualNumero: { fontSize: 32, fontWeight: 'bold', color: '#FFF' },
   percentualLabel: { fontSize: 13, color: '#E0F2FE' },
   secao: { fontSize: 16, fontWeight: 'bold', color: '#0EA5E9', marginTop: 20, marginBottom: 12 },
@@ -119,10 +112,7 @@ const styles = StyleSheet.create({
   barraPreenchimento: { height: '100%', borderRadius: 8 },
   barraValor: { width: 28, textAlign: 'right', fontSize: 13, fontWeight: 'bold', color: '#475569' },
   resumoGrid: { flexDirection: 'row', gap: 10, flexWrap: 'wrap' },
-  resumoCard: {
-    flex: 1, minWidth: '28%', backgroundColor: '#FFF', borderRadius: 12,
-    padding: 14, borderLeftWidth: 4, elevation: 2,
-  },
+  resumoCard: { flex: 1, minWidth: '28%', backgroundColor: '#FFF', borderRadius: 12, padding: 14, borderLeftWidth: 4, elevation: 2 },
   resumoNumero: { fontSize: 22, fontWeight: 'bold', color: '#1E293B' },
   resumoTexto: { fontSize: 12, color: '#64748B', marginTop: 2 },
   atividadeItem: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFF', borderRadius: 10, padding: 14, marginBottom: 8, elevation: 1 },

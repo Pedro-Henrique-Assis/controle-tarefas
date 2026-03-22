@@ -1,8 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import {
-  View, Text, FlatList, TouchableOpacity,
-  Modal, Alert, StyleSheet, SafeAreaView, ScrollView
-} from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Modal, Alert, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { buscarTrabalhos, inserirTrabalho, atualizarTrabalho, deletarTrabalho } from '../banco-de-dados/trabalhoRepository';
 import { buscarAlunos } from '../banco-de-dados/alunoRepository';
@@ -25,20 +22,20 @@ export default function TrabalhosScreen({ navigation }) {
 
   useFocusEffect(useCallback(() => { carregarTrabalhos(); }, []));
 
-  const carregarTrabalhos = () => setTrabalhos(buscarTrabalhos());
+  const carregarTrabalhos = async () => setTrabalhos(await buscarTrabalhos() || []);
 
-  const abrirModalNovo = () => {
+  const abrirModalNovo = async () => {
     setNome(''); setSituacao('pendente'); setDataEntrega('');
     setAlunosSelecionados([]); setTrabalhoEditando(null);
-    setAlunosDisponiveis(buscarAlunos());
+    setAlunosDisponiveis(await buscarAlunos() || []);
     setModalVisivel(true);
   };
 
-  const abrirModalEditar = (trabalho) => {
+  const abrirModalEditar = async (trabalho) => {
     setNome(trabalho.Nome); setSituacao(trabalho.Situacao);
     setDataEntrega(trabalho.Data_entrega); setTrabalhoEditando(trabalho);
-    const alunos = buscarAlunos();
-    const alunosDoTrabalho = buscarAlunosPorTrabalho(trabalho.ID);
+    const alunos = await buscarAlunos() || [];
+    const alunosDoTrabalho = await buscarAlunosPorTrabalho(trabalho.ID) || [];
     const rasSelecionados = alunosDoTrabalho.map((a) => a.RA);
     setAlunosDisponiveis(alunos);
     setAlunosSelecionados(rasSelecionados);
@@ -51,34 +48,31 @@ export default function TrabalhosScreen({ navigation }) {
     );
   };
 
-  const salvar = () => {
-    if (!nome.trim() || !dataEntrega.trim()) {
-      return Alert.alert('Atenção', 'Preencha nome e data de entrega.');
-    }
-    if (alunosSelecionados.length === 0) {
-      return Alert.alert('Atenção', 'Selecione ao menos um aluno.');
-    }
+  const salvar = async () => {
+    if (!nome.trim() || !dataEntrega.trim()) return Alert.alert('Atenção', 'Preencha nome e data de entrega.');
+    if (alunosSelecionados.length === 0) return Alert.alert('Atenção', 'Selecione ao menos um aluno.');
+    
     if (trabalhoEditando) {
-      atualizarTrabalho(trabalhoEditando.ID, nome, situacao, dataEntrega);
-      // Remove vínculos antigos e recria
-      buscarAlunosPorTrabalho(trabalhoEditando.ID).forEach((a) =>
-        deletarAlunoXTrabalho(trabalhoEditando.ID, a.RA)
-      );
-      alunosSelecionados.forEach((ra) => inserirAlunoXTrabalho(trabalhoEditando.ID, ra));
+      await atualizarTrabalho(trabalhoEditando.ID, nome, situacao, dataEntrega);
+      const vinculadosAntigos = await buscarAlunosPorTrabalho(trabalhoEditando.ID) || [];
+      for (const a of vinculadosAntigos) await deletarAlunoXTrabalho(trabalhoEditando.ID, a.RA);
+      for (const ra of alunosSelecionados) await inserirAlunoXTrabalho(trabalhoEditando.ID, ra);
     } else {
-      inserirTrabalho(nome, situacao, dataEntrega);
-      const todos = buscarTrabalhos();
-      const novoId = todos[todos.length - 1].ID;
-      alunosSelecionados.forEach((ra) => inserirAlunoXTrabalho(novoId, ra));
+      await inserirTrabalho(nome, situacao, dataEntrega);
+      const todos = await buscarTrabalhos() || [];
+      if (todos.length > 0) {
+        const novoId = todos[todos.length - 1].ID;
+        for (const ra of alunosSelecionados) await inserirAlunoXTrabalho(novoId, ra);
+      }
     }
     setModalVisivel(false);
-    carregarTrabalhos();
+    await carregarTrabalhos();
   };
 
   const confirmarDeletar = (id) => {
     Alert.alert('Excluir trabalho', 'Deseja excluir este trabalho?', [
       { text: 'Cancelar', style: 'cancel' },
-      { text: 'Excluir', style: 'destructive', onPress: () => { deletarTrabalho(id); carregarTrabalhos(); } },
+      { text: 'Excluir', style: 'destructive', onPress: async () => { await deletarTrabalho(id); carregarTrabalhos(); } },
     ]);
   };
 
@@ -92,9 +86,7 @@ export default function TrabalhosScreen({ navigation }) {
       </View>
 
       <FlatList
-        data={trabalhos}
-        keyExtractor={(item) => String(item.ID)}
-        contentContainerStyle={styles.lista}
+        data={trabalhos} keyExtractor={(item) => String(item.ID)} contentContainerStyle={styles.lista}
         ListEmptyComponent={<Text style={styles.vazio}>Nenhum trabalho cadastrado.</Text>}
         renderItem={({ item }) => (
           <View style={styles.card}>
@@ -130,10 +122,7 @@ export default function TrabalhosScreen({ navigation }) {
             <Text style={styles.labelSituacao}>Situação</Text>
             <View style={styles.situacaoRow}>
               {SITUACOES.map((s) => (
-                <TouchableOpacity
-                  key={s} onPress={() => setSituacao(s)}
-                  style={[styles.situacaoBotao, situacao === s && { backgroundColor: COR_SITUACAO[s] }]}
-                >
+                <TouchableOpacity key={s} onPress={() => setSituacao(s)} style={[styles.situacaoBotao, situacao === s && { backgroundColor: COR_SITUACAO[s] }]}>
                   <Text style={[styles.situacaoTexto, situacao === s && { color: '#FFF' }]}>{s}</Text>
                 </TouchableOpacity>
               ))}
@@ -141,10 +130,7 @@ export default function TrabalhosScreen({ navigation }) {
 
             <Text style={styles.labelSituacao}>Alunos participantes</Text>
             {alunosDisponiveis.map((a) => (
-              <TouchableOpacity
-                key={a.RA} onPress={() => toggleAluno(a.RA)}
-                style={[styles.alunoItem, alunosSelecionados.includes(a.RA) && styles.alunoItemAtivo]}
-              >
+              <TouchableOpacity key={a.RA} onPress={() => toggleAluno(a.RA)} style={[styles.alunoItem, alunosSelecionados.includes(a.RA) && styles.alunoItemAtivo]}>
                 <Text style={alunosSelecionados.includes(a.RA) ? styles.alunoTextoAtivo : styles.alunoTexto}>
                   {alunosSelecionados.includes(a.RA) ? '✅' : '⬜'} {a.Nome}
                 </Text>

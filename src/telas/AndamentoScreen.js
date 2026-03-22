@@ -10,13 +10,15 @@ export default function AndamentoScreen({ navigation, route }) {
   const { trabalho } = route.params;
   const [atividades, setAtividades] = useState([]);
 
-  useFocusEffect(useCallback(() => {
-    setAtividades(buscarAtividadesPorTrabalho(trabalho.ID));
-  }, []));
+  const carregar = async () => {
+    setAtividades(await buscarAtividadesPorTrabalho(trabalho.ID) || []);
+  };
 
-  const alterarStatus = (id, novoStatus) => {
-    atualizarStatusAtividade(id, novoStatus);
-    setAtividades(buscarAtividadesPorTrabalho(trabalho.ID));
+  useFocusEffect(useCallback(() => { carregar(); }, []));
+
+  const alterarStatus = async (id, novoStatus) => {
+    await atualizarStatusAtividade(id, novoStatus);
+    await carregar();
   };
 
   return (
@@ -28,10 +30,8 @@ export default function AndamentoScreen({ navigation, route }) {
       <Text style={styles.subtitulo}>{trabalho.Nome}</Text>
 
       <FlatList
-        data={atividades}
-        keyExtractor={(item) => String(item.ID_Atividade)}
-        contentContainerStyle={styles.lista}
-        ListEmptyComponent={<Text style={styles.vazio}>Nenhuma atividade neste trabalho.</Text>}
+        data={atividades} keyExtractor={(item) => String(item.ID_Atividade)}
+        contentContainerStyle={styles.lista} ListEmptyComponent={<Text style={styles.vazio}>Nenhuma atividade neste trabalho.</Text>}
         renderItem={({ item }) => (
           <View style={styles.card}>
             <Text style={styles.cardDesc}>{item.Descricao}</Text>
@@ -39,10 +39,7 @@ export default function AndamentoScreen({ navigation, route }) {
             <Text style={styles.labelStatus}>Alterar status:</Text>
             <View style={styles.statusRow}>
               {SITUACOES.map((s) => (
-                <TouchableOpacity
-                  key={s} onPress={() => alterarStatus(item.ID_Atividade, s)}
-                  style={[styles.statusBotao, item.Status === s && { backgroundColor: COR_STATUS[s] }]}
-                >
+                <TouchableOpacity key={s} onPress={() => alterarStatus(item.ID_Atividade, s)} style={[styles.statusBotao, item.Status === s && { backgroundColor: COR_STATUS[s] }]}>
                   <Text style={[styles.statusTexto, item.Status === s && { color: '#FFF' }]}>{s}</Text>
                 </TouchableOpacity>
               ))}

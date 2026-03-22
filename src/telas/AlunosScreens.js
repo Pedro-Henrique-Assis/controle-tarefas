@@ -1,8 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import {
-  View, Text, FlatList, TouchableOpacity,
-  Modal, Alert, StyleSheet, SafeAreaView, ScrollView
-} from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Modal, Alert, StyleSheet, SafeAreaView } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { buscarAlunos, inserirAluno, atualizarAluno, deletarAluno } from '../banco-de-dados/alunoRepository';
 import InputTexto from '../componentes/InputTexto';
@@ -17,7 +14,7 @@ export default function AlunosScreen() {
 
   useFocusEffect(useCallback(() => { carregarAlunos(); }, []));
 
-  const carregarAlunos = () => setAlunos(buscarAlunos());
+  const carregarAlunos = async () => setAlunos(await buscarAlunos() || []);
 
   const abrirModalNovo = () => {
     setRa(''); setNome(''); setEditando(false); setModalVisivel(true);
@@ -27,23 +24,22 @@ export default function AlunosScreen() {
     setRa(aluno.RA); setNome(aluno.Nome); setEditando(true); setModalVisivel(true);
   };
 
-  const salvar = () => {
-    if (!ra.trim() || !nome.trim()) {
-      return Alert.alert('Atenção', 'Preencha todos os campos.');
-    }
+  const salvar = async () => {
+    if (!ra.trim() || !nome.trim()) return Alert.alert('Atenção', 'Preencha todos os campos.');
+    
     if (editando) {
-      atualizarAluno(ra, nome);
+      await atualizarAluno(ra, nome);
     } else {
-      inserirAluno(ra, nome);
+      await inserirAluno(ra, nome);
     }
     setModalVisivel(false);
-    carregarAlunos();
+    await carregarAlunos();
   };
 
   const confirmarDeletar = (raAluno) => {
     Alert.alert('Excluir aluno', 'Deseja excluir este aluno?', [
       { text: 'Cancelar', style: 'cancel' },
-      { text: 'Excluir', style: 'destructive', onPress: () => { deletarAluno(raAluno); carregarAlunos(); } },
+      { text: 'Excluir', style: 'destructive', onPress: async () => { await deletarAluno(raAluno); carregarAlunos(); } },
     ]);
   };
 
@@ -57,9 +53,7 @@ export default function AlunosScreen() {
       </View>
 
       <FlatList
-        data={alunos}
-        keyExtractor={(item) => item.RA}
-        contentContainerStyle={styles.lista}
+        data={alunos} keyExtractor={(item) => item.RA} contentContainerStyle={styles.lista}
         ListEmptyComponent={<Text style={styles.vazio}>Nenhum aluno cadastrado.</Text>}
         renderItem={({ item }) => (
           <View style={styles.card}>

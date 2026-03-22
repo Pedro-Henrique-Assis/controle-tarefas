@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { initializeDatabase } from './src/banco-de-dados/banco';
+import { getDatabase } from './src/banco-de-dados/banco';
 import AppNavigator from './src/navegacao/AppNavigator';
 
 export default function App() {
@@ -8,7 +8,7 @@ export default function App() {
   useEffect(() => {
     const initDB = async () => {
       try {
-        await initializeDatabase();
+        getDatabase(); // Inicializa o banco de dados e cria as tabelas
         console.log('Banco de dados inicializado!');
       } catch (error) {
         console.error('Erro ao inicializar o banco:', error);

@@ -1,8 +1,8 @@
-import { getDbConnection } from './banco';
+import { getDatabase } from './banco';
 
 // CREATE
 export const inserirTrabalho = async (nome, situacao, dataEntrega) => {
-  const db = await getDbConnection();
+  const db = getDatabase();
   await db.runAsync(
     `INSERT INTO Trabalho (Nome, Situacao, Data_entrega) VALUES (?, ?, ?);`,
     [nome, situacao, dataEntrega]
@@ -11,14 +11,14 @@ export const inserirTrabalho = async (nome, situacao, dataEntrega) => {
 
 // READ - Buscar todos
 export const buscarTrabalhos = async () => {
-  const db = await getDbConnection();
+  const db = getDatabase();
   const result = await db.getAllAsync(`SELECT * FROM Trabalho;`);
   return result.rows ?? [];
 };
 
 // READ - Buscar por ID
 export const buscarTrabalhoPorID = async (id) => {
-  const db = await getDbConnection();
+  const db = getDatabase();
   const result = await db.getFirstAsync(
     `SELECT * FROM Trabalho WHERE ID = ?;`,
     [id]
@@ -28,7 +28,7 @@ export const buscarTrabalhoPorID = async (id) => {
 
 // UPDATE
 export const atualizarTrabalho = async (id, nome, situacao, dataEntrega) => {
-  const db = await getDbConnection();
+  const db = getDatabase();
   await db.runAsync(
     `UPDATE Trabalho SET Nome = ?, Situacao = ?, Data_entrega = ? WHERE ID = ?;`,
     [nome, situacao, dataEntrega, id]
@@ -37,7 +37,7 @@ export const atualizarTrabalho = async (id, nome, situacao, dataEntrega) => {
 
 // DELETE
 export const deletarTrabalho = async (id) => {
-  const db = await getDbConnection();
+  const db = getDatabase();
   await db.runAsync(
     `DELETE FROM Trabalho WHERE ID = ?;`,
     [id]

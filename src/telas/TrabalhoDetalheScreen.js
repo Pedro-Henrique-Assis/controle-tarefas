@@ -23,8 +23,8 @@ export default function TrabalhoDetalheScreen({ navigation, route }) {
 
       <ScrollView contentContainerStyle={styles.conteudo}>
         <Text style={styles.titulo}>{trabalho.Nome}</Text>
-        <Text style={styles.info}>📅 Entrega: {trabalho.Data_entrega}</Text>
-        <Text style={styles.info}>📌 Situação: {trabalho.Situacao}</Text>
+        <Text style={styles.info}>Entrega: {trabalho.Data_entrega}</Text>
+        <Text style={styles.info}>Situação: {trabalho.Situacao}</Text>
 
         <Text style={styles.secao}>Alunos participantes</Text>
         {alunos.map((a) => (
@@ -35,9 +35,9 @@ export default function TrabalhoDetalheScreen({ navigation, route }) {
         ))}
 
         <Text style={styles.secao}>Opções</Text>
-        <BotaoPrimario titulo="📋 Ver Atividades" onPress={() => navigation.navigate('Atividades', { trabalho })} />
-        <BotaoPrimario titulo="⚙️ Andamento das Atividades" onPress={() => navigation.navigate('Andamento', { trabalho })} cor="#7C3AED" />
-        <BotaoPrimario titulo="📊 Gráfico de Progresso" onPress={() => navigation.navigate('Grafico', { trabalho })} cor="#059669" />
+        <BotaoPrimario titulo="Ver Atividades" onPress={() => navigation.navigate('Atividades', { trabalho })} />
+        <BotaoPrimario titulo="Andamento das Atividades" onPress={() => navigation.navigate('Andamento', { trabalho })} cor="#7C3AED" />
+        <BotaoPrimario titulo="Gráfico de Progresso" onPress={() => navigation.navigate('Grafico', { trabalho })} cor="#059669" />
       </ScrollView>
     </SafeAreaView>
   );

@@ -3,8 +3,8 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet, SafeAreaView } from
 import { useFocusEffect } from '@react-navigation/native';
 import { buscarAtividadesPorTrabalho, atualizarStatusAtividade } from '../banco-de-dados/atividadeRepository';
 
-const SITUACOES = ['pendente', 'concluida', 'cancelada'];
-const COR_STATUS = { concluida: '#22C55E', cancelada: '#EF4444', pendente: '#F59E0B' };
+const SITUACOES = ['Pendente', 'Concluida', 'Cancelada'];
+const COR_STATUS = { Concluida: '#22C55E', Cancelada: '#EF4444', Pendente: '#F59E0B' };
 
 export default function AndamentoScreen({ navigation, route }) {
   const { trabalho } = route.params;
@@ -35,7 +35,7 @@ export default function AndamentoScreen({ navigation, route }) {
         renderItem={({ item }) => (
           <View style={styles.card}>
             <Text style={styles.cardDesc}>{item.Descricao}</Text>
-            <Text style={styles.cardAluno}>👤 RA: {item.Aluno_RA}</Text>
+            <Text style={styles.cardAluno}>RA: {item.Aluno_RA}</Text>
             <Text style={styles.labelStatus}>Alterar status:</Text>
             <View style={styles.statusRow}>
               {SITUACOES.map((s) => (

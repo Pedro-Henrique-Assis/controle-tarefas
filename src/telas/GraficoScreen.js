@@ -3,7 +3,7 @@ import { View, Text, ScrollView, StyleSheet, SafeAreaView, TouchableOpacity } fr
 import { useFocusEffect } from '@react-navigation/native';
 import { buscarAtividadesPorTrabalho } from '../banco-de-dados/atividadeRepository';
 
-const COR_STATUS = { concluida: '#22C55E', cancelada: '#EF4444', pendente: '#F59E0B' };
+const COR_STATUS = { Concluida: '#22C55E', Cancelada: '#EF4444', Pendente: '#F59E0B' };
 
 export default function GraficoScreen({ navigation, route }) {
   const { trabalho } = route.params;
@@ -18,14 +18,14 @@ export default function GraficoScreen({ navigation, route }) {
   }, [trabalho.ID]));
 
   const total = atividades.length;
-  const concluidas = atividades.filter((a) => a.Status === 'concluida').length;
-  const pendentes = atividades.filter((a) => a.Status === 'pendente').length;
-  const canceladas = atividades.filter((a) => a.Status === 'cancelada').length;
-  const percentual = total > 0 ? Math.round((concluidas / total) * 100) : 0;
+  const Concluidas = atividades.filter((a) => a.Status === 'Concluida').length;
+  const Pendentes = atividades.filter((a) => a.Status === 'Pendente').length;
+  const Canceladas = atividades.filter((a) => a.Status === 'Cancelada').length;
+  const percentual = total > 0 ? Math.round((Concluidas / total) * 100) : 0;
 
   const totalHoras = atividades.reduce((soma, a) => soma + (a.Horas_trabalhadas || 0), 0);
   const horasConcluidas = atividades
-    .filter((a) => a.Status === 'concluida')
+    .filter((a) => a.Status === 'Concluida')
     .reduce((soma, a) => soma + (a.Horas_trabalhadas || 0), 0);
 
   const larguraBarra = (quantidade) => (total > 0 ? (quantidade / total) * 100 : 0);
@@ -49,9 +49,9 @@ export default function GraficoScreen({ navigation, route }) {
 
         <Text style={styles.secao}>Atividades por status</Text>
         {[
-          { status: 'concluida', quantidade: concluidas },
-          { status: 'pendente', quantidade: pendentes },
-          { status: 'cancelada', quantidade: canceladas },
+          { status: 'Concluida', quantidade: Concluidas },
+          { status: 'Pendente', quantidade: Pendentes },
+          { status: 'Cancelada', quantidade: Canceladas },
         ].map(({ status, quantidade }) => (
           <View key={status} style={styles.barraContainer}>
             <Text style={styles.barraLabel}>{status}</Text>

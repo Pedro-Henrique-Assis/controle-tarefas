@@ -27,6 +27,7 @@ export const createTables = (db) => {
       ID_Atividade INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
       Descricao VARCHAR NOT NULL,
       Status VARCHAR NOT NULL,
+      Horas_trabalhadas REAL NOT NULL DEFAULT 0,
       Trabalho_ID INTEGER NOT NULL,
       Aluno_RA VARCHAR NOT NULL,
       FOREIGN KEY (Trabalho_ID) REFERENCES Trabalho(ID)

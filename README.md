@@ -1,22 +1,22 @@
-# 📱 Controle de Tarefas
+# Controle de Tarefas
 
 Aplicativo mobile desenvolvido em **React Native com Expo**, com persistência de dados utilizando **SQLite**.  
 O sistema permite gerenciar trabalhos e atividades, acompanhando o progresso e as horas trabalhadas.
 
 ---
 
-## 🚀 Funcionalidades
+## Funcionalidades
 
-- 📌 Cadastro de alunos  
-- 📂 Cadastro de trabalhos  
-- 🔗 Associação entre alunos e trabalhos  
-- ✅ Criação e gerenciamento de atividades  
-- ⏱️ Registro de horas trabalhadas por atividade  
-- 💾 Armazenamento local com SQLite  
+- Cadastro de alunos  
+- Cadastro de trabalhos  
+- Associação entre alunos e trabalhos  
+- Criação e gerenciamento de atividades  
+- Registro de horas trabalhadas por atividade  
+- Armazenamento local com SQLite  
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## Tecnologias Utilizadas
 
 - React Native  
 - Expo  
@@ -38,7 +38,7 @@ src/
 
 ---
 
-## ⚙️ Como executar o projeto
+## Como executar o projeto
 
 Clonar o repositório  
 ```bash
@@ -62,7 +62,7 @@ npx expo start
 
 ---
 
-## 🗄️ Banco de Dados
+## Banco de Dados
 
 O projeto utiliza SQLite para persistência local.
 
@@ -75,20 +75,20 @@ Tabelas principais:
 
 ---
 
-## 📌 Observações
+## Observações
 
 - O banco de dados é persistido localmente no dispositivo  
 - Alterações no schema exigem migração manual ou recriação do banco  
 
 ---
 
-## 👨‍💻 Autores
+## Autores
 
-- Pedro Henrique Assis  
+- Pedro Henrique Rodrigues de Assis  
 - Alex Akio Nishimura Junior  
 
 ---
 
-## 📄 Licença
+## Licença
 
 Este projeto é de uso acadêmico.

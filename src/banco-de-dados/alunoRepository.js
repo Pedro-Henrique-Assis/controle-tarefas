@@ -13,7 +13,7 @@ export const inserirAluno = async (ra, nome) => {
 export const buscarAlunos = async () => {
   const db = getDatabase();
   const result = await db.getAllAsync(`SELECT * FROM Aluno;`);
-  // CORREÇÃO: Removido o ".rows". O getAllAsync já retorna o array com os alunos
+
   return result ?? [];
 };
 
@@ -38,7 +38,6 @@ export const atualizarAluno = async (ra, nome) => {
 
 // DELETE
 export const deletarAluno = async (ra) => {
-  // CORREÇÃO: Trocado 'await getDbConnection()' por 'getDatabase()'
   const db = getDatabase(); 
   await db.runAsync(
     `DELETE FROM Aluno WHERE RA = ?;`,

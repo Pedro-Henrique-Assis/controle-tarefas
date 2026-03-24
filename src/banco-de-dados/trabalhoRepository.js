@@ -13,7 +13,6 @@ export const inserirTrabalho = async (nome, situacao, dataEntrega) => {
 export const buscarTrabalhos = async () => {
   const db = getDatabase();
   const result = await db.getAllAsync(`SELECT * FROM Trabalho;`);
-  // CORREÇÃO: Removido o ".rows", pois o getAllAsync já retorna o array diretamente
   return result ?? [];
 };
 

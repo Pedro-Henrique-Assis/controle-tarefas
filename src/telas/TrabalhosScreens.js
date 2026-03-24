@@ -104,8 +104,6 @@ export default function TrabalhosScreen({ navigation }) {
   const salvar = async () => {
     if (!nome.trim() || !dataEntrega.trim()) return Alert.alert('Atenção', 'Preencha nome e selecione a data de entrega.');
     if (alunosSelecionados.length === 0) return Alert.alert('Atenção', 'Selecione ao menos um aluno.');
-    
-    // O alerta antigo foi removido daqui!
 
     if (trabalhoEditando) {
       await atualizarTrabalho(trabalhoEditando.ID, nome, situacao, dataEntrega);
@@ -210,7 +208,7 @@ export default function TrabalhosScreen({ navigation }) {
 
             <Text style={styles.labelSituacao}>Situação</Text>
             <View style={styles.situacaoRow}>
-              {/* Agora o map varre a lista de 'situacoesExibidas' filtrada dinamicamente */}
+              {}
               {situacoesExibidas.map((s) => (
                 <TouchableOpacity key={s} onPress={() => setSituacao(s)} style={[styles.situacaoBotao, situacao === s && { backgroundColor: COR_SITUACAO[s] }]}>
                   <Text style={[styles.situacaoTexto, situacao === s && { color: '#FFF' }]}>{s}</Text>
